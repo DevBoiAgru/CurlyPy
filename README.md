@@ -55,6 +55,10 @@ with open("translated.py", "+w") as out:
 # Then run translated.py using python
 
 ```
+### Command line usage:
+```bash
+python -m curlypy path/to/input/curlypy/file.cpy path/to/output/python/file.py
+```
 
 CurlyPy will convert your code with brackets into traditional Python with correct indentation and block structures.
 
