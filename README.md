@@ -129,7 +129,7 @@ for n in range(10):
 ```python
 x = 5;
 if x == 5 {
-    ;       # Will case python code to be problematic
+    ;       # Will cause python code to be problematic
 }
 
 # Use this instead
@@ -142,7 +142,7 @@ if x == 5 {
 ```python
 def incomplete_func() {
     print("This will fail");
-# Missing closing bracket, but translated code will work.
+# Missing closing bracket, but translated code will work. (Rare case)
 ```
 
 - **Complex typehints for dictionary and set types** are not supported and will lead to a syntax error in the generated python code.
