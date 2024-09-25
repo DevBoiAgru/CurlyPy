@@ -33,20 +33,27 @@ def check_even_odd(num) { print(f"{num} is {'even' if num % 2 == 0 else 'odd'};"
 
 ## Installation
 
-**Clone the repository:**
+**Install from PyPI:**
 
 ```bash
-git clone https://github.com/DevBoiAgru/curlypy.git
-cd curlypy
+pip install CurlyPy
 ```
 
 ## Usage
 
 Once you have CurlyPy installed, you can preprocess your Python files written with curly braces and optional semicolons into standard Python.
 
-### Command-line usage:
-```bash
-python -m curlypy path/to/curlypy/file path/to/python/file
+### Module usage:
+```python
+# some_file.py
+from curlypy import CurlyPyTranslator
+
+translator = CurlyPyTranslator(filename="curlypython.cpy")
+translated_code: str = translator.translate()
+with open("translated.py", "+w") as out:
+    out.write(translated_code)
+# Then run translated.py using python
+
 ```
 
 CurlyPy will convert your code with brackets into traditional Python with correct indentation and block structures.

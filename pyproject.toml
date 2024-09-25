@@ -1,0 +1,18 @@
+[project]
+name = "CurlyPy"
+version = "0.0.2"
+authors = [
+  { name="DevBoiAgru" },
+]
+description = "A preprocessor to turn python code with braces into python"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/DevBoiAgru/CurlyPy"
+Issues = "https://github.com/DevBoiAgru/CurlyPy/issues"
