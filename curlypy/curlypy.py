@@ -2,9 +2,9 @@ from .errors import *
 import re
 
 class CurlyPyTranslator:
-    def __init__(self, filename: str = None, indentation: str = "   ") -> None:
+    def __init__(self, filename: str = None, indentation: str = "    ") -> None:
         """
-        Initializes a BrythonTranslator object.
+        Initializes a CurlyPyTranslator object.
 
         Args:
             filename (str): The name of the file to be translated. Defaults to None.
@@ -18,16 +18,16 @@ class CurlyPyTranslator:
         self.translated: str = ""
 
     def translate(self,
-                  brython_code: str,
+                  curlypy_code: str,
                   extra: bool,
                   remove_comments: bool = False,
                   output_raw: bool = False,
                   force_translate: bool = False) -> str:
         """
-        Translates Brython code into Python code.
+        Translates CurlyPy code into Python code.
 
         Args:
-            brython_code (str): The Brython code to be translated.
+            curlypy_code (str): The CurlyPy code to be translated.
             extra (bool): Whether to add extra features to the translated code, like true = True and false = False.
             remove_comments (bool): Whether to remove comments from the translated code. Defaults to True.
             output_raw (bool): Whether to output the raw python code with no formatting. Defaults to False.
@@ -37,127 +37,132 @@ class CurlyPyTranslator:
             str: The translated Python code.
 
         Raises:
-            BrythonTranslatorError: If unmatched brackets are found in the Brython code.
+            CurlyPyTranslatorError: If unmatched brackets are found in the CurlyPy code.
         """
         indentation_depth: int = 0
         last_useful_char: str = ""
-        inside_something: bool = False              # If we are inside a comment, string, or a dictionary where we don't expand the indentation and other
-                                                    # special symbols
 
-        dict_typehint_regex: str = r':\s*([a-zA-Z_]\w*(?:\[[^\]]+\])?)\s*='
 
-        self.translated = "# This code was translated to Python from Brython\n"
+        self.translated: str = "# This code was translated to Python from CurlyPy\n"
 
         # Extra features
         if extra:
-            self.translated += "true = True\nfalse = False\n"
+            self.translated += "true = True; false = False\n"
         
+        # States
+        in_double_quotes: bool = False
+        in_single_quotes: bool = False
+        in_comment      : bool = False
+        in_collection   : bool = False          # Sets or Dictionaries
+
+        collection_typehint_regex: str = r':\s*(dict|set|[a-zA-Z_]\w*)(?:\[[^\]]*\])?\s*='
+        collection_depth: int = 0
+
         # The fun stuff
-        for line_number, line in enumerate(brython_code.splitlines()):
+        for line_number, line in enumerate(curlypy_code.splitlines()):
             self.translated += self.indentation * indentation_depth
 
-
             # Check for typehints in the line for a dictionary
-            typehint_match = re.search(dict_typehint_regex, line)
+            typehint_match = re.search(collection_typehint_regex, line)
             if typehint_match:
                 typehint = typehint_match.group(1).lower()
                 if typehint.startswith("dict") or typehint.startswith("set"):
                     # We are inside a dict or a set, no need to use brackets for indentation for this line
-                    inside_something = True
-            
-            # How many quotes we have seen in this line. It resets every time we are in a new line
-            double_quotes_seen: int = 0
-            single_quotes_seen: int = 0
+                    in_collection = True
 
             for char_index, char in enumerate(line.strip()):
 
-                if inside_something:
-                    # We are in a comment or a string, so just append the character and move on. No need to check for anything
+                if in_comment:
+                    # We are in a comment, no need to check for anything
                     self.translated += char
                     continue
                 
-                if char == "{":
-                    # We are opening a bracket, increase the indentation depth and add a colon
-                    indentation_depth +=1
-                    self.translated += ":\n"
-                    self.translated += self.indentation * indentation_depth
+                if char == "{" and not (in_double_quotes or in_single_quotes):
+
+                    if in_collection:
+                        collection_depth +=1
+                        self.translated += char
+                    else:
+                        # We are opening a bracket for indentation, increase the indentation depth and add a colon
+                        indentation_depth +=1
+                        self.translated += ":\n"
+                        self.translated += self.indentation * indentation_depth
 
                 
                 elif char == "}":
-                    if last_useful_char == "{" and not inside_something:
+                    if last_useful_char == "{" and not (in_comment or in_double_quotes or in_single_quotes):
                         # Opened a bracket and immediately closed it?? What a weirdo
                         
                         # Remove the last colon we added when the bracket was opened
                         # One rstrip to remove spaces and tabs, one to remove the last colon
+                        # This is required since we added the colon and spaces when the bracket was opened
                         self.translated = self.translated.rstrip().rstrip(":")
-                        
-                    indentation_depth -=1
-                
+                    
+                    if (in_single_quotes or in_double_quotes):
+                        # We are in a string, no need to change the indentation
+                        self.translated += char
+                        continue
+
+                    # Check if a collection was closed or a code block was closed
+                    if in_collection:
+                        collection_depth -=1
+                        self.translated += char
+                        if collection_depth == 0:
+                            in_collection = False
+                    else:
+                        # We are closing a bracket for indentation, decrease the indentation depth
+                        indentation_depth -=1
+                        self.translated += "\n"
+                        self.translated += self.indentation * indentation_depth
+
+
                 elif char == ";":
+
+                    # Check if we are in a string. This check is required for all symbols
+                    # which are replaced dynamically
+                    if (in_single_quotes or in_double_quotes):
+                        self.translated += char
+                        continue
                     # End of statement, start a new line with indentation
                     self.translated += "\n"
                     self.translated += self.indentation * indentation_depth
                 
                 elif char == "#":
                     # Start of a comment, mark it and add the character
-                    inside_something = True
+                    in_comment = True
                     self.translated += char
 
-                elif char == " ":
-                    if last_useful_char == ";" or last_useful_char == "{":
+                elif char == " " and not (in_single_quotes or in_double_quotes):
+                    # We do not care about spaces after these symbols
+                    if last_useful_char in [";", "{", "}"]:
                         continue
                     else:
                         self.translated += char
 
                 elif char == '"':
-                    # Start / end of a string
-                    double_quotes_seen += 1
-
-                    # If we have seen an odd number of double quotes, we are inside a string
-                    if double_quotes_seen % 2 == 0:
-                        inside_something = False
-                    else:
-                        inside_something = True
-
+                    in_double_quotes = not in_double_quotes
                     self.translated += char
 
                 elif char == "'":
-                    # Start / end of a string
-                    single_quotes_seen += 1
-
-                    # If we have seen an odd number of double quotes, we are inside a string
-                    if single_quotes_seen % 2 == 0:
-                        inside_something = False
-                    else:
-                        inside_something = True
-
+                    in_single_quotes = not in_single_quotes
                     self.translated += char
                 
                 else:
                     # Normal character, just add it
                     self.translated += char
 
-
                 last_useful_char = char
-
             self.translated += "\n"
-            
 
             # Line over, we are out of a comment or string (if we were in one)
-            inside_something = False
+            in_comment = False
 
-        # Error checking
-        if not force_translate:
-            if indentation_depth > 0:
-                # This should raise an exception but currently the strings logic messes with how we count indentation
-                pass
-                # raise UnmatchedBracketsError(f"Unmatched brackets found in Brython code!")
         return self.format(self.translated, remove_comments) if not output_raw else self.translated
 
     
     def format(self, python_code: str, remove_comments: bool = True) -> str:
         """
-        (lightly) Formats the Python code to make it somewhat readable. For proper formatting, use a third party tool.
+        Formats the Python code (badly) to make it somewhat readable. For proper formatting, use a third party tool.
 
         What it does:
 
@@ -170,7 +175,7 @@ class CurlyPyTranslator:
             remove_comments (bool): Whether to remove comments from the code. Defaults to True.
 
         Returns:
-            str: The formatted Brython code.
+            str: The formatted CurlyPy code.
         """
 
         # Remove comments from the code
@@ -179,7 +184,7 @@ class CurlyPyTranslator:
 
         lines: list[str] = []
         for line in python_code.splitlines():
-            # Clear all lines with no text in them
+            # Clear all lines with whitespace only, smush every line together
             clean_line = line.strip()
             if clean_line == "":
                 continue
@@ -212,7 +217,7 @@ class CurlyPyTranslator:
 
     def translate_file(self, extra: bool= True, remove_comments: bool = True, output_raw: bool = False, force_translate: bool = False) -> str:
         """
-        Translates a Brython file into Python code.
+        Translates a CurlyPy file into Python code.
 
         Args:
             None
@@ -222,5 +227,5 @@ class CurlyPyTranslator:
         """
         if self.filename is None:
             raise Exception("No filename provided while initialisation!")
-        with open(self.filename, "r") as brython_file:
-            return self.translate(brython_file.read(), extra, remove_comments, output_raw, force_translate)
+        with open(self.filename, "r") as curlypy_file:
+            return self.translate(curlypy_file.read(), extra, remove_comments, output_raw, force_translate)

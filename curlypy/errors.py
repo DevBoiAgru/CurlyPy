@@ -1,5 +1,5 @@
 
-class BrythonTranslatorError(Exception):
+class CurlyPyTranslatorError(Exception):
     """
     Base class for all exceptions raised by the BrythonTranslator class.
     """
@@ -7,13 +7,13 @@ class BrythonTranslatorError(Exception):
 
 
 # Error definitions
-class UnmatchedBracketsError(BrythonTranslatorError):
+class UnmatchedBracketsError(CurlyPyTranslatorError):
     """
     Raised when unmatched brackets are found in the Brython code.
     """
     pass
 
-class UnmatchedQuotesError(BrythonTranslatorError):
+class UnmatchedQuotesError(CurlyPyTranslatorError):
     """
     Raised when unmatched quotes are found in the Brython code.
     """

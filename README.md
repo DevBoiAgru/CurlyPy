@@ -7,17 +7,28 @@ With CurlyPy, you can write Python code using braces to define code blocks, elim
 ## Key Features
 
 - **Curly Braces for Code Blocks**: Use `{}` to denote the start and end of code blocks, removing the need for indentation.
-- **Semi-Mandatory Semicolons**: Semicolons (`;`) are supported as optional separators between statements, but they are still not strictly required after every statement. For example, they are required if you are writing multiple instructions in the same line.
+- **Semi-Mandatory Semicolons**: Semicolons (`;`) are supported as optional separators between statements, but they are still not strictly required after every statement. They will, however, be required if you are writing multiple instructions in the same line.
 - **Flexible Syntax**: Write Python code with a more structured format, closer to languages like C, Java, or JavaScript, while keeping all the strengths of Python.
 - **Compatible with Python**: CurlyPy preprocesses your code into standard Python, so it can be executed by any Python interpreter.
-- **Dictionary and Set Types**: Although restricted to a single line, the standard Python dictionary and set types are available in CurlyPy.
+- **Dictionary and Set Types**: The standard Python dictionary and set types are available in CurlyPy, using type hints.
 
 
 Valid CurlyPy syntax:
 ```python
-# Dictionary is defined using type hints, in a single line
-dictionary_test: dict[str, str] = {"foo":"bar", "baz":"qux"}
-print(dictionary_test["foo"])
+# Dictionaries and sets are defined using type hints
+dictionary_test: dict[str, str] = {
+   "foo":"bar", 
+   "baz":{
+      "qux":"quux"
+   }
+}
+set_test: set[str] = {"foo", "bar", "baz"}
+print(dictionary_test["foo"], set_test)
+```
+
+CurlyPy makes even this syntax possible!
+```python
+def check_even_odd(num) { print(f"{num} is {'even' if num % 2 == 0 else 'odd'};"); }; check_even_odd(10); check_even_odd(7);
 ```
 
 ## Installation
@@ -105,18 +116,41 @@ for n in range(10):
 
 
 ## Upcoming improvements
-- Add support for multiline dictionaries and sets.
 - Better documentation
+- Documentation on using CurlyPy as a python module
 - Script to directly run the translated python code
-- Logic improvement for strings
 - Possibly a new name
-- A lot of regex for matching content inside quotes
+- Better command line argument parsing
+- Error checking
 
 ## Current Limitations
 
-- **Whitespace is still required** in certain contexts, such as separating variables, operators, and function arguments.
-- **Brackets must be correctly balanced** and follow Python’s block structure rules to avoid syntax errors.
-- **Conditions in if clauses need improvements**, but not for long, since development is ongoing.
+- **Empty blocks are not supported**, leading to a syntax error in python.
+```python
+x = 5;
+if x == 5 {
+    ;       # Will case python code to be problematic
+}
+
+# Use this instead
+if x == 5 {
+   pass;
+}
+```
+
+- **Error checking** is not implemented
+```python
+def incomplete_func() {
+    print("This will fail");
+# Missing closing bracket, but translated code will work.
+```
+
+- **Complex typehints for dictionary and set types** are not supported and will lead to a syntax error in the generated python code.
+```python
+complex_type: dict[str, set[int]] = {"evens": {0, 2, 4}, "odds": {1, 3, 5}};  # Complex type hint with sets and dicts
+```
+
+
 
 ## Contributing
 
@@ -129,7 +163,7 @@ Contributions are welcome! If you want to contribute to CurlyPy or report an iss
 3. Submit a pull request with a clear description of the change
 
 ### Why not [bython](https://github.com/mathialo/bython)?
-I wanted to make my own version of a preprocessor for Python with braces, that's all.
+I wanted to make my own version of a preprocessor for Python with braces, that's all. 
 
 ## License
 
