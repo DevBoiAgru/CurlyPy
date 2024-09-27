@@ -36,7 +36,7 @@ def check_even_odd(num) { print(f"{num} is {'even' if num % 2 == 0 else 'odd'};"
 **Install from PyPI:**
 
 ```bash
-pip install CurlyPy
+pip install curlypy
 ```
 
 ## Usage
@@ -50,6 +50,7 @@ from curlypy import CurlyPyTranslator
 
 translator = CurlyPyTranslator(filename="curlypython.cpy")
 translated_code: str = translator.translate()
+
 with open("translated.py", "+w") as out:
     out.write(translated_code)
 # Then run translated.py using python
@@ -57,7 +58,25 @@ with open("translated.py", "+w") as out:
 ```
 ### Command line usage:
 ```bash
-python -m curlypy path/to/input/curlypy/file.cpy path/to/output/python/file.py
+# Example usage
+>> python -m curlypy --run path/to/cpy/file --output path/to/output/python/file --keep
+
+# To get help
+>> python -m curlypy --h
+usage: python -m curlypy [-h] [--output OUTPUT] [--run] [--comments] [--force] [--delete] filename
+
+Translate and run python code with braces
+
+positional arguments:
+  filename         The filename to translate.
+
+options:
+  -h, --help       show this help message and exit
+  --output OUTPUT  The output filename. Defaults to <filename>.py
+  --run            Set this flag if you want to run the translated code directly after translating.
+  --comments       Set this flag if you want to keep comments in the translated code.
+  --force          Set this flag if you want to force the translation. i.e. dont perform any checks. Can output non working code. Defaults to False.
+  --delete         Set this flag if you want to delete the translated file after running it.
 ```
 
 CurlyPy will convert your code with brackets into traditional Python with correct indentation and block structures.
@@ -131,7 +150,6 @@ for n in range(10):
 - Documentation on using CurlyPy as a python module
 - Script to directly run the translated python code
 - Possibly a new name
-- Better command line argument parsing
 - Error checking
 
 ## Current Limitations

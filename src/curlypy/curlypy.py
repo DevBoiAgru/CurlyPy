@@ -19,8 +19,8 @@ class CurlyPyTranslator:
 
     def translate(self,
                   curlypy_code: str,
-                  extra: bool,
-                  remove_comments: bool = False,
+                  extra: bool = True,
+                  remove_comments: bool = True,
                   output_raw: bool = False,
                   force_translate: bool = False) -> str:
         """
@@ -214,18 +214,3 @@ class CurlyPyTranslator:
             # Add the stripped line to the lines list
             lines.append(line)
         return "\n".join(lines)
-
-    def translate_file(self, extra: bool= True, remove_comments: bool = True, output_raw: bool = False, force_translate: bool = False) -> str:
-        """
-        Translates a CurlyPy file into Python code.
-
-        Args:
-            None
-
-        Returns:
-            str: The translated Python code.
-        """
-        if self.filename is None:
-            raise Exception("No filename provided while initialisation!")
-        with open(self.filename, "r") as curlypy_file:
-            return self.translate(curlypy_file.read(), extra, remove_comments, output_raw, force_translate)

@@ -13,8 +13,7 @@ empty_dict: dict = {};  # Empty dictionary
 
 # Set assignments
 my_set: set[int] = {1, 2, 3};
-my_empty_set: set = {};  # Empty set
-nested_set: set = {{1, 2}, {3, 4}};  # Set of sets
+my_empty_set: set = {};  # Empty sets
 
 # Complex type hints
 complex_type: dict = {"evens": {0, 2, 4}, "odds": {1, 3, 5}};
@@ -59,3 +58,6 @@ def test_function() -> None {
     local_dict: dict[str, float] = {"pi": 3.14, "e": 2.71};
     local_set: set[str] = {"apple", "banana", "cherry"};
 }
+    
+# Hello!
+print("Hello, World!");
