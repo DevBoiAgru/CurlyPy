@@ -1,4 +1,4 @@
-from .errors import *
+from curlypy.errors import *
 import re
 
 class CurlyPyTranslator:
@@ -22,7 +22,7 @@ class CurlyPyTranslator:
                   extra: bool = True,
                   remove_comments: bool = True,
                   output_raw: bool = False,
-                  force_translate: bool = False) -> str:
+                  error_check: bool = True) -> str:
         """
         Translates CurlyPy code into Python code.
 
@@ -31,13 +31,13 @@ class CurlyPyTranslator:
             extra (bool): Whether to add extra features to the translated code, like true = True and false = False.
             remove_comments (bool): Whether to remove comments from the translated code. Defaults to True.
             output_raw (bool): Whether to output the raw python code with no formatting. Defaults to False.
-            force_translate (bool): Whether to force the translation. i.e. don't perform any checks. Can output non working code. Defaults to False.
+            error_check (bool): Whether to perform basic syntax checks. Can output non working code if set to False. Defaults to True.
 
         Returns:
             str: The translated Python code.
 
         Raises:
-            CurlyPyTranslatorError: If unmatched brackets are found in the CurlyPy code.
+            CurlyPySyntaxError: If syntax errors are found in the CurlyPy code.
         """
         indentation_depth: int = 0
         last_useful_char: str = ""
@@ -53,21 +53,26 @@ class CurlyPyTranslator:
         in_double_quotes: bool = False
         in_single_quotes: bool = False
         in_comment      : bool = False
-        in_collection   : bool = False          # Sets or Dictionaries
+        in_collection   : bool = False          # Collection types like dict, set, list, tuple
+                                                # Indentation isn't mandatory within these types
 
-        collection_typehint_regex: str = r':\s*(dict|set|[a-zA-Z_]\w*)(?:\[[^\]]*\])?\s*='
+        typehint_regex: str = r":\s*([a-zA-Z0-9_]+)"
         collection_depth: int = 0
+
+        # Data for errors
+        bracket_stack: list[dict] = []          # Contains info about all the brackets opened and closed as a list of dicts
 
         # The fun stuff
         for line_number, line in enumerate(curlypy_code.splitlines()):
             self.translated += self.indentation * indentation_depth
 
             # Check for typehints in the line for a dictionary
-            typehint_match = re.search(collection_typehint_regex, line)
+            typehint_match = re.search(typehint_regex, line)
+            
             if typehint_match:
                 typehint = typehint_match.group(1).lower()
-                if typehint.startswith("dict") or typehint.startswith("set"):
-                    # We are inside a dict or a set, no need to use brackets for indentation for this line
+                if typehint in ["dict", "set", "list", "tuple"]:
+                    # We are inside a collection, no need to use brackets for indentation for this line
                     in_collection = True
 
             for char_index, char in enumerate(line.strip()):
@@ -78,7 +83,6 @@ class CurlyPyTranslator:
                     continue
                 
                 if char == "{" and not (in_double_quotes or in_single_quotes):
-
                     if in_collection:
                         collection_depth +=1
                         self.translated += char
@@ -117,7 +121,6 @@ class CurlyPyTranslator:
 
 
                 elif char == ";":
-
                     # Check if we are in a string. This check is required for all symbols
                     # which are replaced dynamically
                     if (in_single_quotes or in_double_quotes):
@@ -148,21 +151,44 @@ class CurlyPyTranslator:
                     self.translated += char
                 
                 else:
-                    # Normal character, just add it
+                    # Normal character, append it and continue
                     self.translated += char
+
+                # Error checking
+                if char in ["(", "[", "{"] and not (in_double_quotes or in_single_quotes):
+                    bracket_stack.append(
+                        {
+                            "char": char,
+                            "line_number": line_number + 1,     # +1 because the index starts at 0
+                            "char_index": char_index + 1        # same here
+                        }
+                    )
+
+                elif char in [")", "]", "}"] and not (in_double_quotes or in_single_quotes):
+                    bracket_mappings: dict = {")": "(", "]": "[", "}": "{"}
+                    if len(bracket_stack) == 0:
+                        if error_check:
+                            raise CurlyPySyntaxError(f"Unmatched '{char}' on line {line_number + 1}, col {char_index + 1}")
+                    else:
+                        if bracket_stack[-1]["char"] == bracket_mappings[char]:
+                            bracket_stack.pop()
 
                 last_useful_char = char
             self.translated += "\n"
 
-            # Line over, we are out of a comment or string (if we were in one)
+            # Line over, we are out of a comment (if we were in one)
             in_comment = False
 
-        return self.format(self.translated, remove_comments) if not output_raw else self.translated
+        # Error checking
+        if len(bracket_stack) != 0 and error_check:
+            raise CurlyPySyntaxError(f"Unmatched '{bracket_stack[-1]['char']}' on line {bracket_stack[-1]['line_number']}, col {bracket_stack[-1]['char_index']}")
+
+        return self.clean(self.translated, remove_comments) if not output_raw else self.translated
 
     
-    def format(self, python_code: str, remove_comments: bool = True) -> str:
+    def clean(self, python_code: str, remove_comments: bool = True) -> str:
         """
-        Formats the Python code (badly) to make it somewhat readable. For proper formatting, use a third party tool.
+        Removes empty lines, lines with only whitespace and trailing whitespace from the input code.
 
         What it does:
 
@@ -171,11 +197,11 @@ class CurlyPyTranslator:
         - Removes comments from the code (optional)
 
         Args:
-            python_code (str): The Python code to be formatted.
+            python_code (str): The Python code to be cleaned.
             remove_comments (bool): Whether to remove comments from the code. Defaults to True.
 
         Returns:
-            str: The formatted CurlyPy code.
+            str: The cleaned code.
         """
 
         # Remove comments from the code

@@ -1,6 +1,6 @@
 [project]
 name = "curlypy"
-version = "0.0.3"
+version = "0.1.0"
 authors = [
   { name="DevBoiAgru" },
 ]
@@ -12,6 +12,9 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+
+[project.scripts]
+curlypy = "curlypy.__main__:main"
 
 [project.urls]
 Homepage = "https://github.com/DevBoiAgru/CurlyPy"

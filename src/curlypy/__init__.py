@@ -1,1 +1,0 @@
-from .curlypy import CurlyPyTranslator

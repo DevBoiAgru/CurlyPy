@@ -1,4 +1,6 @@
 true = True; false = False
+for i in range(10):
+    print(i)
 my_int: int = 5
 my_float: float = 3.14
 my_string: str = "Hello, World!"
@@ -34,3 +36,35 @@ def test_function() -> None :
     local_dict: dict[str, float] = {"pi": 3.14, "e": 2.71}
     local_set: set[str] = {"apple", "banana", "cherry"}
 print("Hello, World!")
+from typing import Any, Callable, Literal, Optional, Union
+simple_int: int = 42
+simple_str: str = 'hello'
+simple_float: float = 3.14
+simple_bool: bool = True
+container_list: list[int] = [1, 2, 3]
+container_dict: dict[str, int] = {'a': 1, 'b': 2}
+container_set: set[float] = {1.1, 2.2, 3.3}
+container_tuple: tuple[int, str, bool] = (1, 'a', True)
+nested_dict: dict[str, list[int]] = {'a': [1, 2]}
+nested_list: list[dict[str, set[int]]] = [{'a': {1}}]
+nested_tuple: tuple[set[str], dict[int, float]] = ...
+optional_value: Optional[int] = None
+union_value: Union[int, str] = 42
+complex_union: Union[dict[str, int], list[str]] = ...
+simple_callable: Callable[[int, str], bool] = ...
+complex_callable: Callable[[list[int], dict[str, float]], str] = ...
+any_type: Any = 42
+literal_type: Literal['a', 'b', 'c'] = 'a'
+multiline_dict: dict[
+str,
+list[int]
+] = ...
+nested_multiline_dict: dict[
+str,
+dict[int, set[float]]
+] = ...
+no_value: list[int]
+assignment_only = 42
+empty_dict: dict = {}
+trailing_comma_list: list[int,] = [1, 2, 3]
+tricky_type: dict[str, list[Union[int, None]]] = ...
