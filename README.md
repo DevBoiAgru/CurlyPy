@@ -51,20 +51,21 @@ Once you have CurlyPy installed, you can preprocess your Python files written wi
 >> curlypy path/to/cpy/file
 
 # To get help
->> curlypy --h
-usage: curlypy [-h] [--output OUTPUT] [--norun] [--force] [--delete] filename
+>> curlypy -h
+usage: curlypy [-h] [--output OUTPUT] [--norun] [--force] [--keep] filename ...
 
 Translate and run python code with braces
 
 positional arguments:
   filename         The filename to translate.
+  args             Arguments to pass to the translated code.
 
 options:
   -h, --help       show this help message and exit
-  --output OUTPUT  The output filename. Defaults to <filename>.py
+  --output OUTPUT  The output filename. Defaults to _curlypy_<filename>.py
   --norun          Set this flag if you dont want to run the translated code directly after translating.
   --force          Set this flag if you want to force the translation. i.e. dont perform any checks. Can output non working code. Defaults to False.
-  --delete         Set this flag if you want to delete the translated file after running it.
+  --keep           Set this flag if you want to keep the translated file after running it.
 ```
 
 ### Module usage:

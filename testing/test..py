@@ -1,6 +1,14 @@
 true = True; false = False
+import sys
+print("Arguments passed:", sys.argv)
 for i in range(10):
     print(i)
+import requests
+res = requests.get("https://www.example.com")
+if res.status_code == 200 :
+    print("Success!")
+else :
+    print("Error", res.status_code)
 my_int: int = 5
 my_float: float = 3.14
 my_string: str = "Hello, World!"

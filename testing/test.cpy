@@ -1,8 +1,23 @@
 # Test Cases for CurlyPy Preprocessor
 
+# Commandline arguments
+import sys
+print("Arguments passed:", sys.argv)
+
 # Loop
 for i in range(10){
     print(i)
+}
+
+# Importing modules (Requires modules to be installed in the environment)
+import requests
+
+res = requests.get("https://www.example.com")
+if res.status_code == 200 {
+    print("Success!")
+}
+else {
+    print("Error", res.status_code)
 }
 
 # Basic variable assignments with type hints
