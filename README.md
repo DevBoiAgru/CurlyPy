@@ -167,6 +167,7 @@ raises: curlypy.errors.CurlyPySyntaxError: Unmatched '{' on line 3, col 32
 
 ## Upcoming improvements
 
+-   // Comments
 -   Advanced preprocessing features
 -   Advanced error checking
 -   Possibly a new name
