@@ -41,7 +41,7 @@ class CurlyPyTranslator:
         """
         indentation_depth: int = 0
         last_useful_char: str = ""
-
+        char_list: list[str] = []
 
         self.translated: str = "# This code was translated to Python from CurlyPy\n"
 
@@ -174,6 +174,7 @@ class CurlyPyTranslator:
                             bracket_stack.pop()
 
                 last_useful_char = char
+                char_list.append(char)
             self.translated += "\n"
 
             # Line over, we are out of a comment (if we were in one)

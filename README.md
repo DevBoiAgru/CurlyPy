@@ -167,7 +167,7 @@ raises: curlypy.errors.CurlyPySyntaxError: Unmatched '{' on line 3, col 32
 
 ## Upcoming improvements
 
--   // Comments
+-   ~~// Comments~~ (conflict with floor division)
 -   Advanced preprocessing features
 -   Advanced error checking
 -   Possibly a new name
@@ -187,7 +187,7 @@ Contributions are welcome! If you want to contribute to CurlyPy or report an iss
 
 ## License
 
-This project is licensed under the [GNU General Public License](https://www.gnu.org/licenses/gpl-3.0.en.html). See the [LICENSE](LICENSE) file for details.
+This project is licensed under the [MIT License](LICENSE).
 
 ---
 
