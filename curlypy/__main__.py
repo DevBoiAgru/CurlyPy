@@ -4,6 +4,7 @@ import os
 
 from curlypy import CurlyPyTranslator
 
+
 def main():
     argparser = argparse.ArgumentParser(
         description="Translate and run python code with braces"
@@ -11,7 +12,9 @@ def main():
 
     argparser.add_argument("filename", type=str, help="The filename to translate.")
     argparser.add_argument(
-        "--output", type=str, help="The output filename. Defaults to _curlypy_<filename>.py"
+        "--output",
+        type=str,
+        help="The output filename. Defaults to _curlypy_<filename>.py",
     )
     argparser.add_argument(
         "--norun",
@@ -32,7 +35,7 @@ def main():
         "args",
         type=str,
         help="Arguments to pass to the translated code.",
-        nargs=argparse.REMAINDER
+        nargs=argparse.REMAINDER,
     )
 
     args = argparser.parse_args()
@@ -44,13 +47,11 @@ def main():
         with open(args.filename, "r") as f:
             original_code = f.read()
             translated: str = translator.translate(
-                original_code, error_check = not args.force
+                original_code, error_check=not args.force
             )
 
             if args.keep:
-                output_file = (
-                    args.output if args.output else f"{args.filename[:-4]}.py"
-                )
+                output_file = args.output if args.output else f"{args.filename[:-4]}.py"
             else:
                 output_file = (
                     args.output if args.output else f"_curlypy_{args.filename[:-4]}.py"
@@ -70,6 +71,7 @@ def main():
     except FileNotFoundError:
         print(f"File '{args.filename}' not found", file=sys.stderr)
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
