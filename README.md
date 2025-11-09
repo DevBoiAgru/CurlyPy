@@ -6,16 +6,18 @@ With CurlyPy, you can write Python code using braces to define code blocks, elim
 
 ## Key Features
 
--   **Curly Braces for Code Blocks**: Use `{}` to denote the start and end of code blocks, removing the need for indentation.
--   **Semi-Mandatory Semicolons**: Semicolons (`;`) are supported as optional separators between statements, but they are still not strictly required after every statement. They will, however, be required if you are writing multiple instructions in the same line.
--   **Flexible Syntax**: Write Python code with a more structured format, closer to languages like C, Java, or JavaScript, while keeping all the strengths of Python.
--   **Compatible with Python**: CurlyPy preprocesses your code into standard Python, so it can be executed by any Python interpreter.
--   **Dictionary and Set Types**: The standard Python dictionary and set types are available in CurlyPy, using type hints.
+- **Curly Braces for Code Blocks**: Use `{}` to denote the start and end of code blocks, removing the need for indentation.
+- **Semi-Mandatory Semicolons**: Semicolons (`;`) are supported as optional separators between statements, but they are still not strictly required after every statement. They will, however, be required if you are writing multiple instructions in the same line.
+- **Flexible Syntax**: Write Python code with a more structured format, closer to languages like C, Java, or JavaScript, while keeping all the strengths of Python.
+- **Compatible with Python**: CurlyPy preprocesses your code into standard Python, so it can be executed by any Python interpreter.
+- **Dictionary and Set Types**: The standard Python dictionary and set types are available in CurlyPy, using type hints.
+- **C Style multi-line comments**: CurlyPy adds support for the `/* comment */` styled block comments, for people familiar with C-like languages.
+- **Syntax highlighting**: A VS Code extension to get you up and running with basic syntax highlighting and a few handy snippets, check it out here: https://github.com/DevBoiAgru/curlypy-vscode-extension/
 
 Valid CurlyPy syntax:
 
 ```python
-# Dictionaries and sets are defined using type hints
+/* Dictionaries and sets are defined using type hints */
 dictionary_test: dict[str, str] = {
    "foo":"bar",
    "baz":{
@@ -48,7 +50,7 @@ Once you have CurlyPy installed, you can preprocess your Python files written wi
 
 ```bash
 # Example usage
->> curlypy path/to/cpy/file
+>> curlypy path/to/curlypy/file
 
 # To get help
 >> curlypy -h
@@ -74,7 +76,7 @@ options:
 # some_file.py
 from curlypy import CurlyPyTranslator
 
-translator = CurlyPyTranslator(filename="curlypython.cpy")
+translator = CurlyPyTranslator(filename="curlypython.curlypy")
 translated_code: str = translator.translate()
 
 with open("translated.py", "+w") as out:
@@ -110,6 +112,11 @@ def HelloWorld(name: str) :
       print ("Hello World!")
 ```
 
+## Check out the VS Code extension for a smoother experience
+
+[VS Code extension](https://github.com/DevBoiAgru/curlypy-vscode-extension/),
+Ready for you to install
+
 ## Why CurlyPy?
 
 Python's indentation-based syntax is great for readability but may feel unfamiliar to developers used to brace-based languages like C, Java, or JavaScript. CurlyPy gives you the freedom to write Python code with curly braces, making it easier for those developers to transition to Python without abandoning the structured code block formatting they're used to.
@@ -119,7 +126,9 @@ CurlyPy doesn't take away Python's flexibility—if you love type hints and it's
 CurlyPy:
 
 ```python
-# For loop
+/* For loop
+which prints
+FizzBuzz */
 for n in range(10){
     if n % 3 == 0 and n % 5 == 0 {
         print("FizzBuzz")
@@ -167,11 +176,10 @@ raises: curlypy.errors.CurlyPySyntaxError: Unmatched '{' on line 3, col 32
 
 ## Upcoming improvements
 
--   ~~// Comments~~ (conflict with floor division)
--   Advanced preprocessing features
--   Advanced error checking
--   Possibly a new name
--   More in depth documentation
+- Advanced preprocessing features
+- Advanced error checking
+- Possibly a new name
+- More in depth documentation
 
 ## Contributing
 

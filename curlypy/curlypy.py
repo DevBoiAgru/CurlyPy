@@ -56,6 +56,7 @@ class CurlyPyTranslator:
         in_double_quotes: bool = False
         in_single_quotes: bool = False
         in_comment: bool = False
+        in_block_comment: bool = False
         in_collection: bool = False  # Collection types like dict, set, list, tuple
         # Indentation isn't mandatory within these types
 
@@ -81,6 +82,20 @@ class CurlyPyTranslator:
                     in_collection = True
 
             for char_index, char in enumerate(line.strip()):
+                next_char: str | None
+                prev_char: str | None
+                try:
+                    next_char = line[char_index + 1]
+                except IndexError:
+                    next_char = None
+                try:
+                    if char_index - 1 < 0:
+                        prev_char = None
+                    else:
+                        prev_char = line[char_index - 1]
+                except IndexError:
+                    prev_char = None
+
                 if in_comment:
                     # We are in a comment, no need to check for anything
                     self.translated += char
@@ -138,9 +153,18 @@ class CurlyPyTranslator:
                     # Start of a comment, mark it and add the character
                     in_comment = True
                     self.translated += char
+                
+                # Block comments
+                elif char == "/":
+                    # Check if we are in a string
+                    if not (in_single_quotes or in_double_quotes):
+                        if next_char == "*":
+                            in_block_comment = True
+                        if prev_char == "*" and in_block_comment:
+                            in_block_comment = False
 
                 elif char == " " and not (in_single_quotes or in_double_quotes):
-                    # We do not care about spaces after these symbols
+                    # We do not care about spaces after these symbols, or if we are in a block comment
                     if last_useful_char in [";", "{", "}"]:
                         continue
                     else:
@@ -155,8 +179,9 @@ class CurlyPyTranslator:
                     self.translated += char
 
                 else:
-                    # Normal character, append it and continue
-                    self.translated += char
+                    # Normal character, append it and continue if we arent in a block comment
+                    if not in_block_comment:
+                        self.translated += char
 
                 # Error checking
                 if char in ["(", "[", "{"] and not (
@@ -188,7 +213,7 @@ class CurlyPyTranslator:
                 char_list.append(char)
             self.translated += "\n"
 
-            # Line over, we are out of a comment (if we were in one)
+            # Line over, we are out of a comment if we were in a single line one
             in_comment = False
 
         # Error checking

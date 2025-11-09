@@ -50,11 +50,12 @@ def main():
                 original_code, error_check=not args.force
             )
 
+            original_filename = args.filename.split("/")[-1].split("\\")[-1].split(".")[-2]
             if args.keep:
-                output_file = args.output if args.output else f"{args.filename[:-4]}.py"
+                output_file = args.output if args.output else f"{original_filename}.py"
             else:
                 output_file = (
-                    args.output if args.output else f"_curlypy_{args.filename[:-4]}.py"
+                    args.output if args.output else f"_curlypy_{original_filename}.py"
                 )
 
             with open(output_file, "w") as f:
