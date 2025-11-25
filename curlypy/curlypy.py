@@ -77,7 +77,9 @@ class CurlyPyTranslator:
 
             if typehint_match:
                 typehint = typehint_match.group(1).lower()
-                if typehint in ["dict", "set", "list", "tuple"]:
+                # Only need to take care of collections which use curly brackets
+                if typehint in ["dict", "set"]:
+                    self.translated += f"\n# Typehint got: {typehint}\n"
                     # We are inside a collection, no need to use brackets for indentation for this line
                     in_collection = True
 
