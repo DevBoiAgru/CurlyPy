@@ -1,6 +1,12 @@
 from curlypy.errors import CurlyPySyntaxError
 import re
 
+# TODO: FIX!! What if the user does something like this, it ignores the for loop bracket!
+# complex_callable: Callable[[list[int], dict[str, float]], str] = ...
+
+# for i in range(1){
+#     print(f"Another loop {i}");
+# }
 
 class CurlyPyTranslator:
     def __init__(self, filename: str = "", indentation: str = "    ") -> None:
