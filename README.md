@@ -121,7 +121,7 @@ Ready for you to install
 
 Python's indentation-based syntax is great for readability but may feel unfamiliar to developers used to brace-based languages like C, Java, or JavaScript. CurlyPy gives you the freedom to write Python code with curly braces, making it easier for those developers to transition to Python without abandoning the structured code block formatting they're used to.
 
-CurlyPy doesn't take away Python's flexibility—if you love type hints and it's strong typing, you can keep using them as is. CurlyPy opens up new possibilities for those who prefer braces.
+CurlyPy doesn't take away Python's flexibility—if you love type hints and its strong typing, you can keep using them as is. CurlyPy opens up new possibilities for those who prefer braces.
 
 CurlyPy:
 
